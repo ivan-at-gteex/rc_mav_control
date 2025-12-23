@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"net"
+	"time"
 
 	"github.com/bluenviron/gomavlib/v3"
-	"github.com/pion/transport/v2/udp"
+	"github.com/bluenviron/gomavlib/v3/pkg/dialects/ardupilotmega"
 )
 
 // this example shows how to:
@@ -16,24 +17,10 @@ func main() {
 	// create a node which communicates with a serial endpoint
 	node := &gomavlib.Node{
 		Endpoints: []gomavlib.EndpointConf{
-			gomavlib.EndpointSerial{
-				Device: "/dev/ttyACM0",
-				Baud:   57600,
-			},
-			gomavlib.EndpointCustomServer{
-				Listen: func() (net.Listener, error) {
-					addr, err := net.ResolveUDPAddr("udp4", ":8090")
-					if err != nil {
-						return nil, err
-					}
-
-					return udp.Listen("udp4", addr)
-				},
-				Label: "udp",
-			},
+			gomavlib.EndpointUDPClient{Address: "192.168.2.15:8090"},
 		},
-		Dialect:     nil,         // do not use a dialect and do not attempt to decode messages (in a router it is preferable)
-		OutVersion:  gomavlib.V2, // change to V1 if you're unable to communicate with the target
+		Dialect:     ardupilotmega.Dialect,
+		OutVersion:  gomavlib.V2,
 		OutSystemID: 10,
 	}
 	err := node.Initialize()
@@ -42,15 +29,42 @@ func main() {
 	}
 	defer node.Close()
 
-	// print incoming frames
+	go ReadEvents(node)
+
+	fmt.Println("Aqui")
+
+	for {
+		fmt.Println("Aqui dentro (lá ele)")
+		time.Sleep(10)
+	}
+}
+
+func ReadEvents(node *gomavlib.Node) {
 	for evt := range node.Events() {
 		if frm, ok := evt.(*gomavlib.EventFrame); ok {
-			log.Printf("received: id=%d, %+v\n", frm.Message().GetID(), frm.Message())
-			// route frame to every other channel
-			err = node.WriteFrameExcept(frm.Channel, frm.Frame)
+			fmt.Println("Received message, sending keyboard input")
+			err := node.WriteMessageTo(frm.Channel, &ardupilotmega.MessageManualControl{
+				Target:            frm.SystemID(),
+				X:                 50,
+				Y:                 50,
+				Z:                 50,
+				R:                 0,
+				Buttons:           0,
+				Buttons2:          0,
+				EnabledExtensions: 0,
+				S:                 0,
+				T:                 0,
+				Aux1:              0,
+				Aux2:              0,
+				Aux3:              0,
+				Aux4:              0,
+				Aux5:              0,
+				Aux6:              0,
+			})
 			if err != nil {
 				log.Println("error writing frame:", err)
 			}
 		}
 	}
+	return
 }

@@ -1,0 +1,38 @@
+package main
+
+import (
+	"fmt"
+	"log"
+
+	serial "go.bug.st/serial"
+)
+
+// ReadSerial abre a porta serial indicada por "device" com baud padrão 115200
+// e imprime continuamente todos os dados recebidos até o processo encerrar.
+func ReadSerial(device string) {
+	if device == "" {
+		log.Println("porta serial não especificada")
+		return
+	}
+
+	mode := &serial.Mode{BaudRate: 115200}
+	port, err := serial.Open(device, mode)
+	if err != nil {
+		log.Printf("erro ao abrir porta serial %s: %v\n", device, err)
+		return
+	}
+	defer port.Close()
+
+	buf := make([]byte, 4096)
+	for {
+		n, err := port.Read(buf)
+		if err != nil {
+			log.Printf("erro na leitura da serial: %v\n", err)
+			return
+		}
+		if n > 0 {
+			// imprime exatamente os bytes recebidos (sem adicionar nova linha extra)
+			fmt.Print(string(buf[:n]))
+		}
+	}
+}
