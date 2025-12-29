@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -14,6 +15,37 @@ import (
 var KeyboardValue int
 
 func ReadKeyboard() {
+
+	r := bufio.NewReader(os.Stdin)
+	for {
+		b, err := r.ReadByte()
+		if err != nil {
+			return
+		}
+
+		fmt.Println("Keyboard input:", b)
+
+		if b == 0x1b { // ESC
+			// Possível sequência de escape: ESC [ A / ESC [ B
+			b2, _ := r.ReadByte()
+			if b2 != '[' {
+				continue
+			}
+			b3, _ := r.ReadByte()
+			switch b3 {
+			case 'A': // seta para cima
+				KeyboardValue++
+			case 'B': // seta para baixo
+				KeyboardValue--
+			}
+			continue
+		}
+		// Ignora outras teclas; somente setas afetam o valor
+	}
+}
+
+func SetupKeyboard() {
+
 	fd := int(os.Stdin.Fd())
 	// Coloca o terminal em modo raw para ler teclas imediatamente (Unix)
 	var oldState *unix.Termios

@@ -7,6 +7,11 @@ import (
 	serial "go.bug.st/serial"
 )
 
+type Joystick struct {
+	X int
+	Y int
+}
+
 // ReadSerial abre a porta serial indicada por "device" com baud padrão 115200
 // e imprime continuamente todos os dados recebidos até o processo encerrar.
 func ReadSerial(device string) {

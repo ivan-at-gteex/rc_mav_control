@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
-	"time"
+	"os/signal"
+	"syscall"
 
 	"github.com/bluenviron/gomavlib/v3"
 	"github.com/bluenviron/gomavlib/v3/pkg/dialects/ardupilotmega"
@@ -14,6 +16,11 @@ import (
 // 2) print selected incoming messages.
 
 func main() {
+
+	c := context.Background()
+	ctx, cancel := signal.NotifyContext(c, syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
+
 	// create a node which communicates with a serial endpoint
 	node := &gomavlib.Node{
 		Endpoints: []gomavlib.EndpointConf{
@@ -30,13 +37,14 @@ func main() {
 	defer node.Close()
 
 	go ReadEvents(node)
+	//go ReadKeyboard()
+	go ReadSerial("/dev/ttyACM0")
 
-	fmt.Println("Aqui")
+	log.Println("Program running")
 
-	for {
-		fmt.Println("Aqui dentro (lá ele)")
-		time.Sleep(10)
-	}
+	<-ctx.Done()
+	cancel()
+	log.Println("Received shutdown signal, shutting down.")
 }
 
 func ReadEvents(node *gomavlib.Node) {
