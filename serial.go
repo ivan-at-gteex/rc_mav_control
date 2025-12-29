@@ -19,7 +19,7 @@ func ReadSerial(device string) {
 		return
 	}
 
-	mode := &serial.Mode{BaudRate: 115200}
+	mode := &serial.Mode{BaudRate: 460800}
 	port, err := serial.Open(device, mode)
 	if err != nil {
 		log.Printf("erro ao abrir porta serial %s: %v\n", device, err)
