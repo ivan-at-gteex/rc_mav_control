@@ -13,13 +13,13 @@ type Joystick struct {
 
 // ReadSerial abre a porta serial indicada por "device" com baud padrão 115200
 // e imprime continuamente todos os dados recebidos até o processo encerrar.
-func ReadSerial(device string) {
+func ReadSerial(baud int, device string) {
 	if device == "" {
 		log.Println("porta serial não especificada")
 		return
 	}
 
-	mode := &serial.Mode{BaudRate: 921600}
+	mode := &serial.Mode{BaudRate: baud}
 	port, err := serial.Open(device, mode)
 	if err != nil {
 		log.Printf("erro ao abrir porta serial %s: %v\n", device, err)
