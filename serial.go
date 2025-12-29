@@ -6,6 +6,8 @@ import (
 	"go.bug.st/serial"
 )
 
+var MavControl Control
+
 // ReadSerial abre a porta serial indicada por "device" com baud padrão 115200
 // e imprime continuamente todos os dados recebidos até o processo encerrar.
 func ReadSerial(baud int, device string) {
@@ -32,8 +34,10 @@ func ReadSerial(baud int, device string) {
 			return
 		}
 		if n > 0 {
-			// imprime exatamente os bytes recebidos (sem adicionar nova linha extra)
-			log.Printf(string(buf[:n]))
+			err := MavControl.ParseRaw(buf[:n])
+			if err != nil {
+				log.Println("Error reading sensor data: ", err.Error())
+			}
 		}
 	}
 }
