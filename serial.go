@@ -28,6 +28,8 @@ func ReadSerial(device string) {
 	}
 	defer port.Close()
 
+	log.Printf("porta serial %s aberta\n", device)
+
 	buf := make([]byte, 4096)
 	for {
 		n, err := port.Read(buf)
