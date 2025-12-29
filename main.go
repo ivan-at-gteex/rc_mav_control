@@ -38,7 +38,7 @@ func main() {
 
 	go ReadEvents(node)
 	//go ReadKeyboard()
-	go ReadSerial("/dev/ttyUSB1")
+	go ReadSerial("/dev/ttyUSB0")
 
 	log.Println("Program running")
 
