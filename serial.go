@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
-	serial "go.bug.st/serial"
+	"go.bug.st/serial"
 )
 
 type Joystick struct {
@@ -39,7 +38,7 @@ func ReadSerial(device string) {
 		}
 		if n > 0 {
 			// imprime exatamente os bytes recebidos (sem adicionar nova linha extra)
-			fmt.Print(string(buf[:n]))
+			log.Printf(string(buf[:n]))
 		}
 	}
 }
