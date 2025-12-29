@@ -15,6 +15,8 @@ import (
 // 1) create a node which communicates with a serial endpoint.
 // 2) print selected incoming messages.
 
+var MavControl Control
+
 func main() {
 
 	c := context.Background()
@@ -53,10 +55,10 @@ func ReadEvents(node *gomavlib.Node) {
 			fmt.Println("Received message, sending keyboard input")
 			err := node.WriteMessageTo(frm.Channel, &ardupilotmega.MessageManualControl{
 				Target:            frm.SystemID(),
-				X:                 50,
-				Y:                 50,
-				Z:                 50,
-				R:                 0,
+				X:                 MavControl.GetX(),
+				Y:                 MavControl.GetY(),
+				Z:                 MavControl.GetZ(),
+				R:                 MavControl.GetR(),
 				Buttons:           0,
 				Buttons2:          0,
 				EnabledExtensions: 0,
