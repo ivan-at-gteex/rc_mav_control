@@ -66,7 +66,7 @@ func (a *Axis) GetScaled() int16 {
 }
 
 func (a *Axis) GetZero() int16 {
-	return a.history.values[a.history.currentValue]
+	return a.history.currentValue
 }
 
 func (a *Axis) Init() {
