@@ -72,6 +72,11 @@ func (a *Axis) GetScaled() int16 {
 	scaleRange := a.ScaleMax - a.ScaleMin
 	scaleIndex := float64(valueRange) / float64(scaleRange)
 	scaled := int16(math.Ceil(float64(a.current-a.GetZero()) * scaleIndex))
+
+	if scaled > (zeroRange*-1) && scaled < zeroRange {
+		scaled = 0
+	}
+
 	return scaled
 }
 
