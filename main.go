@@ -47,7 +47,13 @@ func main() {
 
 	go func() {
 		for {
-			time.Sleep(1000 * time.Millisecond)
+			time.Sleep(500 * time.Millisecond)
+			log.Println("Control Values: ",
+				MavControl.Joystick[0].X.Get(),
+				MavControl.Joystick[0].Y.Get(),
+				MavControl.Joystick[1].X.Get(),
+				MavControl.Joystick[1].Y.Get())
+
 			log.Println("Control Zero Value: ",
 				MavControl.Joystick[0].X.GetZero(),
 				MavControl.Joystick[0].Y.GetZero(),
