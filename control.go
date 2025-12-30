@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"log"
 	"math"
 	"regexp"
 	"strconv"
@@ -71,6 +72,8 @@ func (a *Axis) GetScaled() int16 {
 	valueRange := a.max - a.min
 	scaleRange := a.ScaleMax - a.ScaleMin
 	scaleIndex := float64(valueRange) / float64(scaleRange)
+	log.Println("ValueRange,scale,scaleIndex:", valueRange, scaleRange, scaleIndex)
+
 	scaled := int16(math.Ceil(float64(a.current-a.GetZero()) * scaleIndex))
 
 	if scaled > (zeroRange*-1) && scaled < zeroRange {
