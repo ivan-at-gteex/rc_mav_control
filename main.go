@@ -6,6 +6,7 @@ import (
 	"log"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/bluenviron/gomavlib/v3"
 	"github.com/bluenviron/gomavlib/v3/pkg/dialects/ardupilotmega"
@@ -38,9 +39,22 @@ func main() {
 	}
 	defer node.Close()
 
+	MavControl.Init()
+
 	go ReadEvents(node)
 	//go ReadKeyboard()
 	go ReadSerial(460800, "/dev/ttyUSB0")
+
+	go func() {
+		for {
+			time.Sleep(1000 * time.Millisecond)
+			log.Println("Control Zero Value: ",
+				MavControl.Joystick[0].X.GetZero(),
+				MavControl.Joystick[0].Y.GetZero(),
+				MavControl.Joystick[1].X.GetZero(),
+				MavControl.Joystick[1].Y.GetZero())
+		}
+	}()
 
 	log.Println("Program running")
 
