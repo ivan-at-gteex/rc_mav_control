@@ -71,7 +71,7 @@ func (a *Axis) Get() int16 {
 func (a *Axis) GetScaled() int16 {
 	valueRange := a.max - a.min
 	scaleRange := a.ScaleMax - a.ScaleMin
-	scaleIndex := float64(valueRange) / float64(scaleRange)
+	scaleIndex := float64(scaleRange) / float64(valueRange)
 	log.Println("ValueRange,scale,scaleIndex:", valueRange, scaleRange, scaleIndex)
 
 	scaled := int16(math.Ceil(float64(a.current-a.GetZero()) * scaleIndex))
@@ -92,8 +92,8 @@ func (a *Axis) Init(scaleMin int16, scaleMax int16) {
 	a.history.currentValue = 0
 	a.current = 0
 	a.zero = 0
-	a.min = 1000
-	a.max = -1000
+	a.min = 500
+	a.max = 3500
 	a.ScaleMin = scaleMin
 	a.ScaleMax = scaleMax
 	a.zeroSet = false
