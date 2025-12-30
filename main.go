@@ -54,6 +54,12 @@ func main() {
 				MavControl.Joystick[1].X.Get(),
 				MavControl.Joystick[1].Y.Get())
 
+			log.Println("Control Scaled Values: ",
+				MavControl.Joystick[0].X.GetScaled(),
+				MavControl.Joystick[0].Y.GetScaled(),
+				MavControl.Joystick[1].X.GetScaled(),
+				MavControl.Joystick[1].Y.GetScaled())
+
 			log.Println("Control Zero Value: ",
 				MavControl.Joystick[0].X.GetZero(),
 				MavControl.Joystick[0].Y.GetZero(),

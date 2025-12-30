@@ -11,6 +11,7 @@ import (
 const r = `\*(?P<input1>\d{1,4})\|(?P<input2>\d{1,4})\|(?P<input3>\d{1,4})\|(?P<input4>\d{1,4})\*`
 const zeroRange = 10
 const sensorIdx = 0.488400488
+const zeroCounter = 1000
 
 type Control struct {
 	Joystick [2]Joystick
@@ -28,27 +29,33 @@ type Axis struct {
 	max      int16
 	min      int16
 	zero     int16
+	zeroSet  bool
 	history  History
 	ScaleMin int16
 	ScaleMax int16
 }
 
 type History struct {
-	values       map[int16]int16
+	values       map[int16]int32
 	currentValue int16
 }
 
 func (a *Axis) Set(v int16) {
 	a.current = v
 
-	a.history.values[a.current]++
-	if a.history.values[a.current] >= a.history.values[a.history.currentValue] {
-		a.history.currentValue = a.current
+	if a.zeroSet == false {
+		a.history.values[a.current]++
+		if a.history.values[a.current] >= a.history.values[a.history.currentValue] {
+			a.history.currentValue = a.current
+		}
+
+		if a.history.values[a.current] >= zeroCounter {
+			a.zeroSet = true
+		}
 	}
 
 	if a.current <= a.min {
 		a.min = a.current
-		a.zero = (a.max - a.min) / 2
 	}
 	if a.current >= a.max {
 		a.max = a.current
@@ -61,30 +68,34 @@ func (a *Axis) Get() int16 {
 }
 
 func (a *Axis) GetScaled() int16 {
-	return a.current
-
+	valueRange := a.max - a.min
+	scaleRange := a.ScaleMax - a.ScaleMin
+	scaleIndex := float64(valueRange) / float64(scaleRange)
+	scaled := int16(math.Ceil(float64(a.current-a.GetZero()) * scaleIndex))
+	return scaled
 }
 
 func (a *Axis) GetZero() int16 {
 	return a.history.currentValue
 }
 
-func (a *Axis) Init() {
-	a.history.values = make(map[int16]int16)
+func (a *Axis) Init(scaleMin int16, scaleMax int16) {
+	a.history.values = make(map[int16]int32)
 	a.history.currentValue = 0
 	a.current = 0
 	a.zero = 0
 	a.min = 1000
 	a.max = -1000
-	a.ScaleMin = -1000
-	a.ScaleMax = 1000
+	a.ScaleMin = scaleMin
+	a.ScaleMax = scaleMax
+	a.zeroSet = false
 }
 
 func (c *Control) Init() {
-	MavControl.Joystick[0].X.Init()
-	MavControl.Joystick[0].Y.Init()
-	MavControl.Joystick[1].X.Init()
-	MavControl.Joystick[1].Y.Init()
+	MavControl.Joystick[0].X.Init(-1000, 1000)
+	MavControl.Joystick[0].Y.Init(-1000, 1000)
+	MavControl.Joystick[1].X.Init(-1000, 1000)
+	MavControl.Joystick[1].Y.Init(-1000, 1000)
 }
 
 func (c *Control) GetR() int16 {
