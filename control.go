@@ -75,10 +75,7 @@ func (a *Axis) GetScaled() int16 {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
-	valueRange := a.max - a.min
-	scaleRange := a.scaleMax - a.scaleMin
-	scaleIndex := float64(scaleRange) / float64(valueRange)
-	scaled := int16(math.Ceil(float64(a.current-a.GetZero()) * scaleIndex))
+	scaled := int16(math.Ceil(float64(a.current-a.GetZero()) * a.GetScaleIndex()))
 
 	if scaled > (zeroRange*-1) && scaled < zeroRange {
 		return 0
@@ -99,6 +96,12 @@ func (a *Axis) GetZero() int16 {
 	return a.history.currentValue
 }
 
+func (a *Axis) GetScaleIndex() float64 {
+	valueRange := a.max - a.min
+	scaleRange := a.scaleMax - a.scaleMin
+	return float64(scaleRange) / float64(valueRange)
+}
+
 func (a *Axis) Init(scaleMin int16, scaleMax int16) {
 	a.history.values = make(map[int16]int32)
 	a.history.currentValue = 0
@@ -113,7 +116,7 @@ func (a *Axis) Init(scaleMin int16, scaleMax int16) {
 
 func (c *Control) Init() {
 	MavControl.Joystick[0].X.Init(-1000, 1000)
-	MavControl.Joystick[0].Y.Init(-1000, 1000)
+	MavControl.Joystick[0].Y.Init(0, 1000)
 	MavControl.Joystick[1].X.Init(-1000, 1000)
 	MavControl.Joystick[1].Y.Init(-1000, 1000)
 }
@@ -127,7 +130,9 @@ func (c *Control) GetR() int16 {
 func (c *Control) GetZ() int16 {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	return c.Joystick[0].Y.GetScaled()
+
+	scaleIndex := c.Joystick[0].Y.GetScaleIndex()
+	return int16(math.Ceil(float64(c.Joystick[0].Y.Get()) * scaleIndex))
 }
 
 func (c *Control) GetX() int16 {

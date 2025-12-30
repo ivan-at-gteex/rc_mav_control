@@ -4,7 +4,6 @@ go 1.25.5
 
 require (
 	github.com/bluenviron/gomavlib/v3 v3.3.0
-	github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203
 	go.bug.st/serial v1.6.4
 	golang.org/x/sys v0.31.0
 )
