@@ -60,11 +60,11 @@ func main() {
 				MavControl.Joystick[1].X.GetScaled(),
 				MavControl.Joystick[1].Y.GetScaled())
 
-			log.Println("Control Zero Value: ",
-				MavControl.Joystick[0].X.GetZero(),
-				MavControl.Joystick[0].Y.GetZero(),
-				MavControl.Joystick[1].X.GetZero(),
-				MavControl.Joystick[1].Y.GetZero())
+			//log.Println("Control Zero Value: ",
+			//	MavControl.Joystick[0].X.GetZero(),
+			//	MavControl.Joystick[0].Y.GetZero(),
+			//	MavControl.Joystick[1].X.GetZero(),
+			//	MavControl.Joystick[1].Y.GetZero())
 		}
 	}()
 
