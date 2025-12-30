@@ -47,12 +47,12 @@ func main() {
 
 	go func() {
 		for {
-			time.Sleep(500 * time.Millisecond)
-			log.Println("Control Values: ",
-				MavControl.Joystick[0].X.Get(),
-				MavControl.Joystick[0].Y.Get(),
-				MavControl.Joystick[1].X.Get(),
-				MavControl.Joystick[1].Y.Get())
+			time.Sleep(100 * time.Millisecond)
+			//log.Println("Control Values: ",
+			//	MavControl.Joystick[0].X.Get(),
+			//	MavControl.Joystick[0].Y.Get(),
+			//	MavControl.Joystick[1].X.Get(),
+			//	MavControl.Joystick[1].Y.Get())
 
 			log.Println("Control Scaled Values: ",
 				MavControl.Joystick[0].X.GetScaled(),
