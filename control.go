@@ -10,7 +10,6 @@ import (
 
 const r = `\*(?P<input1>\d{1,4})\|(?P<input2>\d{1,4})\|(?P<input3>\d{1,4})\|(?P<input4>\d{1,4})\*`
 const zeroRange = 10
-const sensorIdx = 0.488400488
 const zeroCounter = 1000
 
 type Control struct {
@@ -31,8 +30,9 @@ type Axis struct {
 	zero     int16
 	zeroSet  bool
 	history  History
-	ScaleMin int16
-	ScaleMax int16
+	scaleMin int16
+	scaleMax int16
+	mu       sync.Mutex
 }
 
 type History struct {
@@ -41,6 +41,8 @@ type History struct {
 }
 
 func (a *Axis) Set(v int16) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	a.current = v
 
 	if a.zeroSet == false {
@@ -63,13 +65,18 @@ func (a *Axis) Set(v int16) {
 }
 
 func (a *Axis) Get() int16 {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	return a.current
 
 }
 
 func (a *Axis) GetScaled() int16 {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	valueRange := a.max - a.min
-	scaleRange := a.ScaleMax - a.ScaleMin
+	scaleRange := a.scaleMax - a.scaleMin
 	scaleIndex := float64(scaleRange) / float64(valueRange)
 	scaled := int16(math.Ceil(float64(a.current-a.GetZero()) * scaleIndex))
 
@@ -77,12 +84,12 @@ func (a *Axis) GetScaled() int16 {
 		return 0
 	}
 
-	if scaled > a.ScaleMax {
-		return a.ScaleMax
+	if scaled > a.scaleMax {
+		return a.scaleMax
 	}
 
-	if scaled < a.ScaleMin {
-		return a.ScaleMin
+	if scaled < a.scaleMin {
+		return a.scaleMin
 	}
 
 	return scaled
@@ -99,8 +106,8 @@ func (a *Axis) Init(scaleMin int16, scaleMax int16) {
 	a.zero = 0
 	a.min = 500
 	a.max = 3500
-	a.ScaleMin = scaleMin
-	a.ScaleMax = scaleMax
+	a.scaleMin = scaleMin
+	a.scaleMax = scaleMax
 	a.zeroSet = false
 }
 
@@ -114,29 +121,25 @@ func (c *Control) Init() {
 func (c *Control) GetR() int16 {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-
-	return int16(math.Ceil(float64(c.Joystick[0].X.Get())*sensorIdx) - 1000)
+	return c.Joystick[0].X.GetScaled()
 }
 
 func (c *Control) GetZ() int16 {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-
-	return int16(math.Ceil(float64(c.Joystick[0].Y.Get())*sensorIdx) - 1000)
+	return c.Joystick[0].Y.GetScaled()
 }
 
 func (c *Control) GetX() int16 {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-
-	return int16(math.Ceil(float64(c.Joystick[1].X.Get())*sensorIdx) - 1000)
+	return c.Joystick[1].X.GetScaled()
 }
 
 func (c *Control) GetY() int16 {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-
-	return int16(math.Ceil(float64(c.Joystick[1].Y.Get())*sensorIdx) - 1000)
+	return c.Joystick[1].Y.GetScaled()
 }
 
 func (c *Control) ParseRaw(b []byte) error {
