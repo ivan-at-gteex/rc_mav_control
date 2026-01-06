@@ -107,18 +107,18 @@ func (a *Axis) Init(scaleMin int16, scaleMax int16) {
 	a.history.currentValue = 0
 	a.current = 0
 	a.zero = 0
-	a.min = 500
-	a.max = 3500
+	a.min = 100
+	a.max = 3900
 	a.scaleMin = scaleMin
 	a.scaleMax = scaleMax
 	a.zeroSet = false
 }
 
 func (c *Control) Init() {
-	MavControl.Joystick[0].X.Init(-1000, 1000)
-	MavControl.Joystick[0].Y.Init(0, 1000)
-	MavControl.Joystick[1].X.Init(-1000, 1000)
-	MavControl.Joystick[1].Y.Init(-1000, 1000)
+	c.Joystick[0].X.Init(-1000, 1000)
+	c.Joystick[0].Y.Init(0, 1000)
+	c.Joystick[1].X.Init(-1000, 1000)
+	c.Joystick[1].Y.Init(-1000, 1000)
 }
 
 func (c *Control) GetR() int16 {
@@ -132,7 +132,7 @@ func (c *Control) GetZ() int16 {
 	defer c.mu.Unlock()
 
 	scaleIndex := c.Joystick[0].Y.GetScaleIndex()
-	return int16(math.Ceil(float64(c.Joystick[0].Y.Get()) * scaleIndex))
+	return int16(math.Ceil(float64(c.Joystick[0].Y.Get())*scaleIndex)) - 100
 }
 
 func (c *Control) GetX() int16 {

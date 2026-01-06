@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os/signal"
+	"rc_mavlink/config"
 	"syscall"
 	"time"
 
@@ -24,10 +25,17 @@ func main() {
 	ctx, cancel := signal.NotifyContext(c, syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
+	cfg, errLoad := config.Load()
+	if errLoad != nil {
+		panic(errLoad)
+	}
+
+	serverAddr := cfg.MavLinkAddr + ":" + cfg.MavlinkPort
+
 	// create a node which communicates with a serial endpoint
 	node := &gomavlib.Node{
 		Endpoints: []gomavlib.EndpointConf{
-			gomavlib.EndpointUDPClient{Address: "192.168.2.15:8090"},
+			gomavlib.EndpointUDPClient{Address: serverAddr},
 		},
 		Dialect:     ardupilotmega.Dialect,
 		OutVersion:  gomavlib.V2,
@@ -42,7 +50,7 @@ func main() {
 	MavControl.Init()
 
 	go ReadEvents(node)
-	go ReadSerial(460800, "/dev/ttyUSB0")
+	go ReadSerial(cfg.SerialBaud, cfg.SerialPort)
 
 	go func() {
 		for {
