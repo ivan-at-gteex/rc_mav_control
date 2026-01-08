@@ -11,6 +11,7 @@ import (
 
 	"github.com/bluenviron/gomavlib/v3"
 	"github.com/bluenviron/gomavlib/v3/pkg/dialects/ardupilotmega"
+	"github.com/bluenviron/gomavlib/v3/pkg/message"
 )
 
 // this example shows how to:
@@ -39,7 +40,7 @@ func main() {
 		},
 		Dialect:     ardupilotmega.Dialect,
 		OutVersion:  gomavlib.V2,
-		OutSystemID: 10,
+		OutSystemID: 12,
 	}
 	err := node.Initialize()
 	if err != nil {
@@ -51,6 +52,20 @@ func main() {
 
 	go ReadEvents(node)
 	go ReadSerial(cfg.SerialBaud, cfg.SerialPort)
+
+	go func() {
+		position := false
+		for {
+			time.Sleep(5 * time.Second)
+			if position {
+				node.WriteMessageAll(SetPositionMode())
+				position = false
+			} else {
+				node.WriteMessageAll(SetAtitudeMode())
+				position = true
+			}
+		}
+	}()
 
 	go func() {
 		for {
@@ -104,4 +119,20 @@ func ReadEvents(node *gomavlib.Node) {
 		}
 	}
 	return
+}
+
+func SetAtitudeMode() message.Message {
+	return &ardupilotmega.MessageSetMode{
+		TargetSystem: 1,
+		BaseMode:     81,
+		CustomMode:   131072,
+	}
+}
+
+func SetPositionMode() message.Message {
+	return &ardupilotmega.MessageSetMode{
+		TargetSystem: 1,
+		BaseMode:     81,
+		CustomMode:   196608,
+	}
 }

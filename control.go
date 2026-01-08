@@ -8,13 +8,13 @@ import (
 	"sync"
 )
 
-const r = `\*(?P<input1>\d{1,4})\|(?P<input2>\d{1,4})\|(?P<input3>\d{1,4})\|(?P<input4>\d{1,4})\*`
+const r = `\*(\d{1,4})\|(\d{1,4})\|(\d{1,4})\|(\d{1,4})\|(\d{10})\*`
 const zeroRange = 10
 const zeroCounter = 1000
 
 type Control struct {
 	Joystick [2]Joystick
-	Buttons  [12]bool
+	Buttons  [10]bool
 	mu       sync.Mutex
 }
 
@@ -147,11 +147,15 @@ func (c *Control) GetY() int16 {
 	return c.Joystick[1].Y.GetScaled()
 }
 
+func (c *Control) IsButtonPressed(button int) bool {
+	return c.Buttons[button]
+}
+
 func (c *Control) ParseRaw(b []byte) error {
 
 	InputRegex := regexp.MustCompile(r)
 	subs := InputRegex.FindStringSubmatch(string(b))
-	if len(subs) != 5 {
+	if len(subs) != 6 {
 		return errors.New("invalid input")
 	}
 
@@ -170,6 +174,14 @@ func (c *Control) ParseRaw(b []byte) error {
 	v4, err := strconv.Atoi(subs[4])
 	if err != nil {
 		return errors.Join(errors.New("invalid input"), errors.New(subs[4]), err)
+	}
+
+	for k, v := range subs[5] {
+		if v == '1' {
+			c.Buttons[k] = true
+		} else {
+			c.Buttons[k] = false
+		}
 	}
 
 	c.mu.Lock()
