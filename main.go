@@ -54,20 +54,6 @@ func main() {
 	go ReadSerial(cfg.SerialBaud, cfg.SerialPort)
 
 	go func() {
-		position := false
-		for {
-			time.Sleep(5 * time.Second)
-			if position {
-				node.WriteMessageAll(SetPositionMode())
-				position = false
-			} else {
-				node.WriteMessageAll(SetAtitudeMode())
-				position = true
-			}
-		}
-	}()
-
-	go func() {
 		for {
 			time.Sleep(500 * time.Millisecond)
 			log.Println("Control Values: ",
@@ -115,6 +101,18 @@ func ReadEvents(node *gomavlib.Node) {
 			})
 			if err != nil {
 				log.Println("error writing frame:", err)
+			}
+			if MavControl.IsButtonPressed(0) {
+				err := node.WriteMessageTo(frm.Channel, SetAtitudeMode())
+				if err != nil {
+					log.Println("error writing frame:", err)
+				}
+			}
+			if MavControl.IsButtonPressed(1) {
+				err := node.WriteMessageTo(frm.Channel, SetPositionMode())
+				if err != nil {
+					log.Println("error writing frame:", err)
+				}
 			}
 		}
 	}

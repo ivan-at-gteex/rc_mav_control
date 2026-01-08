@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"go.bug.st/serial"
@@ -32,6 +33,7 @@ func ReadSerial(baud int, device string) {
 			return
 		}
 		if n > 0 {
+			fmt.Println(string(buf[:n]))
 			err := MavControl.ParseRaw(buf[:n])
 			if err != nil {
 				log.Println("Error reading sensor data: ", err.Error())
