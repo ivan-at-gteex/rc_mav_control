@@ -114,7 +114,7 @@ func ReadEvents(node *gomavlib.Node) {
 					log.Println("error writing frame:", err)
 				}
 			}
-			if MavControl.IsButtonPressed(1) {
+			if MavControl.IsButtonPressed(2) {
 				err := node.WriteMessageTo(frm.Channel, SetPositionMode())
 				if err != nil {
 					log.Println("error writing frame:", err)
