@@ -178,6 +178,8 @@ func (c *Control) ParseRaw(text string) error {
 		return errors.Join(errors.New("invalid input for joystick 1, x axis"), errors.New(subs[4]), err)
 	}
 
+	fmt.Println(subs[5])
+
 	for k, v := range subs[5] {
 		if v == '1' {
 			c.Buttons[k] = true
