@@ -37,12 +37,12 @@ func ReadSerial(baud int, device string) {
 			log.Printf("erro na leitura da serial: %v\n", err)
 			return
 		}
-		if n > 0 {
+		if n > 5 {
 			msg := string(buf[:n])
 			//fmt.Println(">>", msg, "<<")
 			err := MavControl.ParseRaw(msg)
 			if err != nil {
-				//log.Println("Error reading sensor data: ", err.Error())
+				log.Println("Error reading sensor data: ", err.Error())
 			}
 		}
 	}
