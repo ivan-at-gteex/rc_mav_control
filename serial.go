@@ -44,6 +44,8 @@ func ReadSerial(baud int, device string) {
 			err := MavControl.ParseRaw(msg)
 			if err != nil {
 				log.Println("Error reading sensor data: ", err.Error())
+			} else {
+				log.Println("Sensor data received")
 			}
 		}
 	}
