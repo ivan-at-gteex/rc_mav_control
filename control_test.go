@@ -79,7 +79,7 @@ func TestParse(t *testing.T) {
 	var err error
 	c.Init()
 
-	err = c.ParseRaw("*1994|2133|2155|2130|0000000000*")
+	err = c.ParseRaw("*1994|2133|2155|2130|1000000000*")
 	assert.NoError(t, err)
 
 	assert.Equal(t, int16(1994), c.Joystick[0].X.Get())
@@ -87,7 +87,7 @@ func TestParse(t *testing.T) {
 	assert.Equal(t, int16(2155), c.Joystick[1].Y.Get())
 	assert.Equal(t, int16(2130), c.Joystick[1].X.Get())
 
-	assert.False(t, c.IsButtonPressed(0))
+	assert.True(t, c.IsButtonPressed(0))
 	assert.False(t, c.IsButtonPressed(1))
 	assert.False(t, c.IsButtonPressed(2))
 	assert.False(t, c.IsButtonPressed(3))

@@ -9,8 +9,10 @@ import (
 	"sync"
 )
 
-// const r = `\*(\d{1,4})\|(\d{1,4})\|(\d{1,4})\|(\d{1,4})\|(\d{10})\*`
-const r = `\*(?P<input1>\d{1,4})\|(?P<input2>\d{1,4})\|(?P<input3>\d{1,4})\|(?P<input4>\d{1,4})|(?P<input5>\d{10})\*`
+const r = `\*(\d{1,4})\|(\d{1,4})\|(\d{1,4})\|(\d{1,4})\|(\d{10})\*`
+
+//const r = `\*(?P<input1>\d{1,4})\|(?P<input2>\d{1,4})\|(?P<input3>\d{1,4})\|(?P<input4>\d{1,4})\|(?P<input5>\d{10})\*`
+
 const zeroRange = 10
 const zeroCounter = 1000
 
