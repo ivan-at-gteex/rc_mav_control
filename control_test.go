@@ -112,7 +112,7 @@ var ZeroValueSet = []string{
 func setZero(t *testing.T, c *Control) {
 
 	for _, v := range ZeroValueSet {
-		err := c.ParseRaw([]byte(v))
+		err := c.ParseRaw(v)
 		assert.NoError(t, err)
 	}
 }
@@ -123,29 +123,29 @@ func TestParse(t *testing.T) {
 	var err error
 	c.Init()
 
-	err = c.ParseRaw([]byte("*1234|3456|34|234|1000010000*"))
+	err = c.ParseRaw("*1994|2133|2155|2130|0000000000*")
 	assert.NoError(t, err)
 
-	assert.Equal(t, int16(1234), c.Joystick[0].X.Get())
-	assert.Equal(t, int16(3456), c.Joystick[0].Y.Get())
-	assert.Equal(t, int16(34), c.Joystick[1].Y.Get())
-	assert.Equal(t, int16(234), c.Joystick[1].X.Get())
+	assert.Equal(t, int16(1994), c.Joystick[0].X.Get())
+	assert.Equal(t, int16(2133), c.Joystick[0].Y.Get())
+	assert.Equal(t, int16(2155), c.Joystick[1].Y.Get())
+	assert.Equal(t, int16(2130), c.Joystick[1].X.Get())
 
-	assert.True(t, c.IsButtonPressed(0))
+	assert.False(t, c.IsButtonPressed(0))
 	assert.False(t, c.IsButtonPressed(1))
 	assert.False(t, c.IsButtonPressed(2))
 	assert.False(t, c.IsButtonPressed(3))
 	assert.False(t, c.IsButtonPressed(4))
-	assert.True(t, c.IsButtonPressed(5))
+	assert.False(t, c.IsButtonPressed(5))
 	assert.False(t, c.IsButtonPressed(6))
 	assert.False(t, c.IsButtonPressed(7))
 	assert.False(t, c.IsButtonPressed(8))
 	assert.False(t, c.IsButtonPressed(9))
 
-	err = c.ParseRaw([]byte("*1sdfs3456|34|234*"))
+	err = c.ParseRaw("*1sdfs3456|34|234*")
 	assert.Error(t, err)
 
-	err = c.ParseRaw([]byte("*3456|34|234*"))
+	err = c.ParseRaw("*3456|34|234*")
 	assert.Error(t, err)
 
 }
@@ -157,7 +157,7 @@ func TestControl(t *testing.T) {
 
 	setZero(t, &c)
 
-	err := c.ParseRaw([]byte("*1234|3456|34|234*"))
+	err := c.ParseRaw("*1234|3456|34|234*")
 	assert.NoError(t, err)
 	assert.Equal(t, 1234, c.Joystick[0].Y.GetScaled())
 }

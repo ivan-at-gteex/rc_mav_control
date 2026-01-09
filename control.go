@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"regexp"
 	"strconv"
@@ -156,24 +157,24 @@ func (c *Control) ParseRaw(text string) error {
 	InputRegex := regexp.MustCompile(r)
 	subs := InputRegex.FindStringSubmatch(text)
 	if len(subs) != 6 {
-		return errors.New("invalid input")
+		return errors.New(fmt.Sprintf("invalid input, expected 5 values separated by |, got %d", len(subs)))
 	}
 
 	v1, err := strconv.Atoi(subs[1])
 	if err != nil {
-		return errors.Join(errors.New("invalid input"), errors.New(subs[1]), err)
+		return errors.Join(errors.New("invalid input for joystick 0, x axis"), errors.New(subs[1]), err)
 	}
 	v2, err := strconv.Atoi(subs[2])
 	if err != nil {
-		return errors.Join(errors.New("invalid input"), errors.New(subs[2]), err)
+		return errors.Join(errors.New("invalid input for joystick 0, Y axis"), errors.New(subs[2]), err)
 	}
 	v3, err := strconv.Atoi(subs[3])
 	if err != nil {
-		return errors.Join(errors.New("invalid input"), errors.New(subs[3]), err)
+		return errors.Join(errors.New("invalid input for joystick 1, y axis"), errors.New(subs[3]), err)
 	}
 	v4, err := strconv.Atoi(subs[4])
 	if err != nil {
-		return errors.Join(errors.New("invalid input"), errors.New(subs[4]), err)
+		return errors.Join(errors.New("invalid input for joystick 1, x axis"), errors.New(subs[4]), err)
 	}
 
 	for k, v := range subs[5] {
