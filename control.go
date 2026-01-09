@@ -17,10 +17,9 @@ const zeroRange = 10
 const zeroCounter = 1000
 
 type Control struct {
-	Joystick   [2]Joystick
-	Buttons    [10]bool
-	RawButtons string
-	mu         sync.Mutex
+	Joystick [2]Joystick
+	Buttons  [10]bool
+	mu       sync.Mutex
 }
 
 type Joystick struct {
@@ -180,8 +179,6 @@ func (c *Control) ParseRaw(text string) error {
 	if err != nil {
 		return errors.Join(errors.New("invalid input for joystick 1, x axis"), errors.New(subs[4]), err)
 	}
-
-	c.RawButtons = subs[5]
 
 	for k, v := range subs[5] {
 		if v == '1' {

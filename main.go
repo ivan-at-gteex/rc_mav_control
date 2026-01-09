@@ -68,8 +68,6 @@ func main() {
 				MavControl.Joystick[1].X.GetScaled(),
 				MavControl.Joystick[1].Y.GetScaled())
 
-			log.Println(MavControl.RawButtons)
-
 			for i := 0; i < 10; i++ {
 				if MavControl.IsButtonPressed(i) {
 					log.Println("Button ", i, " is pressed")
