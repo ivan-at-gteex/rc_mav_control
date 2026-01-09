@@ -151,10 +151,10 @@ func (c *Control) IsButtonPressed(button int) bool {
 	return c.Buttons[button]
 }
 
-func (c *Control) ParseRaw(b []byte) error {
+func (c *Control) ParseRaw(text string) error {
 
 	InputRegex := regexp.MustCompile(r)
-	subs := InputRegex.FindStringSubmatch(string(b))
+	subs := InputRegex.FindStringSubmatch(text)
 	if len(subs) != 6 {
 		return errors.New("invalid input")
 	}

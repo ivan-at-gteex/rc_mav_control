@@ -21,7 +21,13 @@ func ReadSerial(baud int, device string) {
 		log.Printf("erro ao abrir porta serial %s: %v\n", device, err)
 		return
 	}
-	defer port.Close()
+	defer func() {
+		err := port.Close()
+		if err != nil {
+			log.Printf("erro ao fechar porta serial %s: %v\n", device, err)
+			return
+		}
+	}()
 
 	log.Printf("porta serial %s aberta\n", device)
 
@@ -35,7 +41,7 @@ func ReadSerial(baud int, device string) {
 		if n > 0 {
 			msg := string(buf[:n])
 			fmt.Println(msg)
-			err := MavControl.ParseRaw(buf[:n])
+			err := MavControl.ParseRaw(msg)
 			if err != nil {
 				log.Println("Error reading sensor data: ", err.Error())
 			}
