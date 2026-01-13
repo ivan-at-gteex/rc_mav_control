@@ -6,6 +6,7 @@ import (
 	"log"
 	"os/signal"
 	"rc_mavlink/config"
+	"rc_mavlink/gui"
 	"syscall"
 	"time"
 
@@ -77,6 +78,7 @@ func main() {
 	}()
 
 	log.Println("Program running")
+	gui.AppRender()
 
 	<-ctx.Done()
 	cancel()

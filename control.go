@@ -13,8 +13,8 @@ const r = `\*(\d{1,4})\|(\d{1,4})\|(\d{1,4})\|(\d{1,4})\|(\d{10})\*`
 
 //const r = `\*(?P<input1>\d{1,4})\|(?P<input2>\d{1,4})\|(?P<input3>\d{1,4})\|(?P<input4>\d{1,4})\|(?P<input5>\d{10})\*`
 
-const zeroRange = 10
-const zeroCounter = 1000
+const centerRange = 10
+const centerCounter = 1000
 
 type Control struct {
 	Joystick [2]Joystick
@@ -28,20 +28,20 @@ type Joystick struct {
 }
 
 type Axis struct {
-	current  int16
-	max      int16
-	min      int16
-	zero     int16
-	zeroSet  bool
-	history  History
-	scaleMin int16
-	scaleMax int16
-	mu       sync.Mutex
+	current   int16
+	max       int16
+	min       int16
+	center    int16
+	centerSet bool
+	history   History
+	scaleMin  int16
+	scaleMax  int16
+	mu        sync.Mutex
 }
 
 type History struct {
-	values       map[int16]int32
-	currentValue int16
+	values         map[int16]int32
+	mostOftenValue int16
 }
 
 func (a *Axis) Set(v int16) {
@@ -49,14 +49,14 @@ func (a *Axis) Set(v int16) {
 	defer a.mu.Unlock()
 	a.current = v
 
-	if a.zeroSet == false {
+	if a.centerSet == false {
 		a.history.values[a.current]++
-		if a.history.values[a.current] >= a.history.values[a.history.currentValue] {
-			a.history.currentValue = a.current
+		if a.history.values[a.current] >= a.history.values[a.history.mostOftenValue] {
+			a.history.mostOftenValue = a.current
 		}
 
-		if a.history.values[a.current] >= zeroCounter {
-			a.zeroSet = true
+		if a.history.values[a.current] >= centerCounter {
+			a.centerSet = true
 		}
 	}
 
@@ -81,7 +81,7 @@ func (a *Axis) GetScaled() int16 {
 
 	scaled := int16(math.Ceil(float64(a.current-a.GetZero()) * a.GetScaleIndex()))
 
-	if scaled > (zeroRange*-1) && scaled < zeroRange {
+	if scaled > (centerRange*-1) && scaled < centerRange {
 		return 0
 	}
 
@@ -97,7 +97,7 @@ func (a *Axis) GetScaled() int16 {
 }
 
 func (a *Axis) GetZero() int16 {
-	return a.history.currentValue
+	return a.history.mostOftenValue
 }
 
 func (a *Axis) GetScaleIndex() float64 {
@@ -108,14 +108,14 @@ func (a *Axis) GetScaleIndex() float64 {
 
 func (a *Axis) Init(scaleMin int16, scaleMax int16) {
 	a.history.values = make(map[int16]int32)
-	a.history.currentValue = 0
+	a.history.mostOftenValue = 0
 	a.current = 0
-	a.zero = 0
+	a.center = 0
 	a.min = 100
 	a.max = 3900
 	a.scaleMin = scaleMin
 	a.scaleMax = scaleMax
-	a.zeroSet = false
+	a.centerSet = false
 }
 
 func (c *Control) Init() {
