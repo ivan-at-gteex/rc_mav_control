@@ -6,7 +6,6 @@ import (
 	"log"
 	"os/signal"
 	"rc_mavlink/config"
-	"rc_mavlink/gui"
 	"syscall"
 	"time"
 
@@ -78,7 +77,7 @@ func main() {
 	}()
 
 	log.Println("Program running")
-	gui.AppRender()
+	//gui.AppRender()
 
 	<-ctx.Done()
 	cancel()
@@ -116,7 +115,7 @@ func ReadEvents(node *gomavlib.Node) {
 					log.Println("error writing frame:", err)
 				}
 			}
-			if MavControl.IsButtonPressed(2) {
+			if MavControl.IsButtonPressed(1) {
 				err := node.WriteMessageTo(frm.Channel, SetPositionMode())
 				if err != nil {
 					log.Println("error writing frame:", err)

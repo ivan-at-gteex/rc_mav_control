@@ -44,6 +44,7 @@ type MapOption func(*Map)
 // WithOsmTiles configures the map to use osm tile source.
 func WithOsmTiles() MapOption {
 	return func(m *Map) {
+		//m.tileSource = "https://opentopomap.org/#map=17/-14.74587/-39.06902"
 		m.tileSource = "https://tile.openstreetmap.org/%d/%d/%d.png"
 		m.attributionLabel = "OpenStreetMap"
 		m.attributionURL = "https://openstreetmap.org"

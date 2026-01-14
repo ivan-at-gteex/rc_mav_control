@@ -9,6 +9,7 @@ func AppRender() {
 	w := a.NewWindow("Hello World")
 
 	m := NewMap()
+
 	w.SetContent(m)
 	w.ShowAndRun()
 }
